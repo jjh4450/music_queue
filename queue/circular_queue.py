@@ -5,16 +5,16 @@ T = TypeVar('T')
 
 class CircularQueue(Generic[T]):
     """
-    원형 큐 구현 클래스.
+    Circular Queue implementation class.
     """
 
     def __init__(self, capacity: Optional[int] = None, items: Optional[List[T]] = None):
         """
-        큐를 초기화합니다.
+        Initialize the queue.
 
-        :param capacity: 큐의 최대 용량 (items가 없을 때 사용)
-        :param items: 초기 큐의 요소들 (옵션)
-        :raises ValueError: items와 capacity가 모두 None인 경우
+        :param capacity: Maximum capacity of the queue (used when items is None)
+        :param items: Initial queue elements (optional)
+        :raises ValueError: When both items and capacity are None
         """
         if items is not None:
             self.capacity = len(items)
@@ -35,27 +35,27 @@ class CircularQueue(Generic[T]):
             self.size = 0
 
         else:
-            raise ValueError("items 또는 capacity 중 하나는 반드시 지정해야 합니다.")
+            raise ValueError("Either items or capacity must be specified.")
 
     def is_full(self) -> bool:
         """
-        큐가 가득 차 있는지 확인합니다.
+        Check if the queue is full.
 
-        :return: 가득 차 있으면 True, 아니면 False
+        :return: True if full, False otherwise
         """
         return self.size == self.capacity
 
     def is_empty(self) -> bool:
         """
-        큐가 비어있는지 확인합니다.
+        Check if the queue is empty.
 
-        :return: 비어있으면 True, 아니면 False
+        :return: True if empty, False otherwise
         """
         return self.size == 0
 
     def _resize(self) -> None:
         """
-        큐의 용량을 두 배로 늘리고 기존 요소를 복사합니다.
+        Double the queue capacity and copy existing elements.
         """
         new_capacity = self.capacity * 2
         new_queue = [None] * new_capacity
@@ -70,9 +70,9 @@ class CircularQueue(Generic[T]):
 
     def enqueue(self, item: T) -> None:
         """
-        큐에 아이템을 삽입합니다. 필요하다면 자동으로 큐를 리사이징합니다.
+        Insert an item into the queue. Automatically resizes if necessary.
 
-        :param item: 삽입할 아이템
+        :param item: Item to insert
         """
         if self.is_full():
             self._resize()
@@ -86,9 +86,9 @@ class CircularQueue(Generic[T]):
 
     def dequeue(self) -> Optional[T]:
         """
-        큐에서 아이템을 제거하고 반환합니다.
+        Remove and return an item from the queue.
 
-        :return: 제거된 아이템, 큐가 비었으면 None
+        :return: Removed item, None if queue is empty
         """
         if self.is_empty():
             return None
@@ -103,10 +103,10 @@ class CircularQueue(Generic[T]):
 
     def get_item(self, idx: int) -> Optional[T]:
         """
-        큐에서 특정 인덱스의 아이템을 반환합니다.
+        Return item at specific index in the queue.
 
-        :param idx: 0-based 인덱스
-        :return: 해당 인덱스의 아이템, 범위를 벗어나면 None
+        :param idx: 0-based index
+        :return: Item at the index, None if out of range
         """
         if idx < 0 or idx >= self.size:
             return None
@@ -114,13 +114,13 @@ class CircularQueue(Generic[T]):
 
     def __len__(self) -> int:
         """
-        큐의 현재 크기를 반환합니다.
+        Return the current size of the queue.
         """
         return self.size
 
     def __iter__(self):
         """
-        큐를 순회할 수 있는 이터레이터를 제공합니다.
+        Provide iterator for queue traversal.
         """
         idx = self.front
         for _ in range(self.size):
@@ -129,33 +129,33 @@ class CircularQueue(Generic[T]):
 
     def __getitem__(self, idx: int) -> Optional[T]:
         """
-        큐의 인덱스를 통해 아이템에 접근할 수 있게 합니다.
+        Allow access to items through queue indexing.
 
-        :param idx: 0-based 인덱스
-        :return: 해당 인덱스의 아이템
+        :param idx: 0-based index
+        :return: Item at the index
         """
         return self.get_item(idx)
 
     def __setitem__(self, idx: int, value: T) -> None:
         """
-        특정 인덱스의 아이템을 설정합니다.
+        Set item at specific index.
 
-        :param idx: 0-based 인덱스
-        :param value: 설정할 값
+        :param idx: 0-based index
+        :param value: Value to set
         """
         if idx < 0 or idx >= self.size:
-            raise IndexError("큐 인덱스가 범위를 벗어났습니다")
+            raise IndexError("Queue index out of range")
         real_idx = (self.front + idx) % self.capacity
         self._queue[real_idx] = value
 
     def __delitem__(self, idx: int) -> None:
         """
-        특정 인덱스의 아이템을 삭제하고, 큐를 재배치합니다.
+        Delete item at specific index and rearrange the queue.
 
-        :param idx: 0-based 인덱스
+        :param idx: 0-based index
         """
         if idx < 0 or idx >= self.size:
-            raise IndexError("큐 인덱스가 범위를 벗어났습니다")
+            raise IndexError("Queue index out of range")
 
         new_queue = [None] * self.capacity
         new_size = 0
@@ -178,15 +178,15 @@ class CircularQueue(Generic[T]):
 
     def __bool__(self) -> bool:
         """
-        MusicSystem이 비어있는지 여부를 반환한다.
+        Return whether MusicSystem is empty.
 
-        :return: 비어있지 않으면 True, 비어있으면 False
+        :return: True if not empty, False if empty
         """
         return self.size > 0
 
     def clear(self) -> None:
         """
-        큐를 초기화합니다.
+        Initialize the queue.
         """
         self._queue = [None] * self.capacity
         self.front = -1
@@ -195,8 +195,8 @@ class CircularQueue(Generic[T]):
 
     def get_all_items(self) -> List[Optional[T]]:
         """
-        큐의 모든 아이템을 리스트로 반환합니다.
+        Return all items in the queue as a list.
 
-        :return: 아이템 리스트
+        :return: List of items
         """
         return [self.get_item(i) for i in range(self.size)]
